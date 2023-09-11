@@ -1,0 +1,138 @@
+@startuml design_database
+
+entity users {
+    id: uuid
+    --
+    name: string
+    --
+    email: string
+    --
+    password: string
+    --
+    birth_date: date
+    --
+    address: string
+    --
+    phone: integer
+    --
+    profession: string
+}
+
+entity events {
+    id: uuid
+    --
+    name: string
+    --
+    owner_id: uuid
+    --
+    event_time: datetime
+    --
+    location: string
+    --
+    price: integer
+    --
+    description: text
+}
+
+entity posts {
+    id: uuid
+    --
+    owner_id: string
+    --
+    title: string
+    --
+    cover: string
+    --
+    content: text
+    --
+    created_at: timestamp
+    --
+    udpated_at: datetime
+}
+
+entity comments {
+    id: uuid
+    --
+    owner_id: uuid
+    --
+    post_id: uuid
+    --
+    parent_comment_id: uuid
+    --
+    post_id: uuid
+    --
+    message: string
+}
+
+entity comment_likes {
+    comment_id: uuid
+    --
+    owner_id: uuid
+}
+
+entity comment_dislikes {
+    comment_id: uuid
+    --
+    owner_id: uuid
+}
+
+entity categories {
+    id: uuid
+    --
+    name: string [unique]
+}
+
+entity tags {
+    id: integer
+    --
+    name: string [unique]
+}
+
+entity roles {
+    id: uuid
+    --
+    name: string
+}
+
+entity participants {
+    id: id
+    --
+    user_id: uuid
+    --
+    event_id: uuid
+    --
+    created_at: timestamp
+    --
+    udpated_at: datetime
+}
+
+entity post_likes {
+    post_id: uuid
+    --
+    owner_id: uuid
+}
+
+entity post_dislikes {
+    post_id: uuid
+    --
+    owner_id: uuid
+}
+
+roles ||-o{ users
+users ||--o{ posts
+users ||--o{ events
+users ||--o{ comments
+users ||--o{ post_likes
+users ||--o{ post_dislikes
+comments ||--o{ comments
+comments ||--o{ comment_likes
+comments ||--o{ comment_dislikes
+posts ||--o{ tags
+posts ||--o{ categories
+posts ||--o{ comments
+posts ||--o{ post_likes
+posts ||--o{ post_dislikes
+events ||-o{ participants
+users ||--o{ participants
+
+@enduml
