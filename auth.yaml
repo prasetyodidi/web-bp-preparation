@@ -1,0 +1,193 @@
+openapi: 3.0.2
+info:
+  title: 'Web BP:Auth'
+  description: API Spec for BP
+  version: '1.0'
+  contact:
+    name: Bakaran Project
+    email: bakaranproject@gmail.com
+    url: bakaranproject.com
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+  - url: api.bakaranproject.com
+  - url: http://localhost:8000/api
+tags:
+  - name: Auth
+    description: Operation about Authentication
+components:
+  parameters:
+    userId:
+      name: userId
+      in: path
+      schema:
+        type: 'string'
+      required: true
+    hashEmail:
+      name: hashEmail
+      in: path
+      schema:
+        type: 'string'
+      required: true
+    expiredVerifyEmail:
+      in: query
+      name: expires
+      schema:
+        type: string
+      required: true
+    signatureVerifyEmail:
+      in: query
+      name: signature
+      schema:
+        type: string
+      required: true
+  securitySchemes:
+    BearerToken:
+      type: http
+      scheme: bearer
+  schemas:
+    BasicResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        code:
+          type: integer
+        message:
+          type: string
+      required:
+        - status
+        - message
+paths:
+  /register:
+    post:
+      tags:
+        - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+                fullName:
+                  type: string
+              required:
+                - email
+                - password
+                - fullName
+      responses:
+        201:
+          description: success registered new user
+          content:
+            application/json:
+              schema:
+                  allOf:  
+                    - $ref: '#/components/schemas/BasicResponse'
+                    - type: object
+                      properties:
+                        data:
+                          type: object
+                          properties:    
+                            addedUser:
+                              type: object
+                              properties:
+                                id:
+                                  type: string
+                                email:
+                                  type: string
+                                fullName:
+                                  type: string
+  /authentications:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+                - email
+                - password
+      tags:
+        - Auth
+      responses:
+        200:
+          description: login with valid credential
+          content:
+            application/json:
+              schema:
+                  allOf:  
+                    - $ref: '#/components/schemas/BasicResponse'
+                    - type: object
+                      properties:
+                        data:
+                          type: object
+                          properties:
+                            accessToken:
+                              type: string
+                            refreshToken:
+                              type: string
+    put:
+      tags:
+        - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken:
+                  type: string
+              required:
+                - refreshToken
+      responses:
+        200:
+          description: Refresh Access Token With Valid Refresh Token
+          content:
+            application/json:
+              schema:
+                  allOf:  
+                    - $ref: '#/components/schemas/BasicResponse'
+                    - type: object
+                      properties:
+                        data:
+                          type: object
+                          properties:
+                            accessToken:
+                              type: string
+                          required:
+                            - accessToken
+    delete:
+      tags:
+        - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken:
+                  type: string
+              required:
+                - refreshToken
+      responses:
+        200:
+          description: Logout With Valid Refresh Token
+          content:
+            application/json:
+              schema:
+                  allOf:  
+                    - $ref: '#/components/schemas/BasicResponse'
+                    - type: object
+                      properties:
+                        data:
+                          type: object
