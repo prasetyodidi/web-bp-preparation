@@ -51,42 +51,188 @@ components:
       type: object
       properties:
         status:
+          type: boolean
+          example: true
+        code:
           type: integer
         message:
           type: string
       required:
         - status
         - message
+    Post:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        cover:
+          type: string
+        content:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+  requestBodies:
+    PostRequest:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              title:
+                type: string
+              cover:
+                type: string
+              content:
+                type: string
+  responses:
+    PostNotFound:
+      description: Post not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: boolean
+                example: false
+              code:
+                type: integer
+                example: 400
+              message:
+                type: string
+                example: Post not found
+              data:
+                type: object
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: boolean
+                example: false
+              code:
+                type: integer
+                example: 404
+              message:
+                type: string
+                example: Bad Request
+              data:
+                type: object
 paths:
   /posts:
     post:
       tags:
         - Post
+      requestBody:
+        $ref: "#/components/requestBodies/PostRequest"
       responses:
         201:
           description: success create
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: "#/components/schemas/BasicResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:   
+                          guest:
+                            type: object
+                            $ref: "#/components/schemas/Post"
+        400:
+          $ref: "#/components/responses/BadRequest"
     get:
       tags:
         - Post
       responses:
         200:
           description: success get all posts
-  /post/{postId}:
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: "#/components/schemas/BasicResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          guests:
+                            type: array
+                            items:
+                              $ref: "#/components/schemas/Post"
+                          owner:
+                            type: object
+                            properties:
+                              name:
+                                type: string
+  /posts/{postId}:
     get:
       tags:
         - Post
       responses:
         200:
-          description: success get post by post i     
+          description: success get post by post i
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: "#/components/schemas/BasicResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/Post"
+        404:
+          $ref: "#/components/responses/PostNotFound"
+        400:
+          $ref: "#/components/responses/BadRequest"
     put:
       tags:
         - Post
+      requestBody:
+        $ref: "#/components/requestBodies/PostRequest"
       responses:
         200:
           description: success update post
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: "#/components/schemas/BasicResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/Post"
+        404:
+          $ref: "#/components/responses/PostNotFound"
+        400:
+          $ref: "#/components/responses/BadRequest"
     delete:
       tags:
         - Post
       responses:
         200:
           description: success delete post
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: "#/components/schemas/BasicResponse"
+        404:
+          $ref: "#/components/responses/PostNotFound"
+        400:
+          $ref: "#/components/responses/BadRequest"
