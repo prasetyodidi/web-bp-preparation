@@ -1,0 +1,77 @@
+openapi: 3.0.2
+info:
+  title: 'Web BP:Upload'
+  description: API Spec for BP
+  version: '1.0'
+  contact:
+    name: Bakaran Project
+    email: bakaranproject@gmail.com
+    url: bakaranproject.com
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+  - url: api.bakaranproject.com
+  - url: http://localhost:8000/api
+components:
+  securitySchemes:
+    BearerToken:
+      type: http
+      scheme: bearer
+  schemas:
+    BasicResponse:
+      type: object
+      properties:
+        status:
+          type: boolean
+          example: true
+        code:
+          type: integer
+        message:
+          type: string
+      required:
+        - status
+        - message
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: boolean
+                example: false
+              code:
+                type: integer
+                example: 404
+              message:
+                type: string
+                example: Bad Request
+              data:
+                type: object
+paths:
+  /uploads:
+    post:
+      tags:
+        - "Upload"
+      responses:
+        201:
+          description: success upload file
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: "#/components/schemas/BasicResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          url:
+                            type: string
+                            example: "https://example.com/images/2121231313.png"
+        400:
+          $ref: "#/components/responses/BadRequest"
